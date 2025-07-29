@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   BarChart,
   Bar,
@@ -29,8 +30,15 @@ import {
   ArrowDownRight,
   Activity,
   Target,
-  Zap
+  Zap,
+  Menu,
+  X,
+  Play,
+  BookOpen
 } from "lucide-react";
+import PricingCalculator from "./PricingCalculator";
+import BlogSection from "./BlogSection";
+import DemoVideo from "./DemoVideo";
 
 // Generate dynamic data based on time period
 const generateData = (period) => {
@@ -124,7 +132,12 @@ const generateTeamData = (period) => {
 const COLORS = ["#6366F1", "#06B6D4", "#F59E0B", "#EF4444", "#10B981"];
 
 const StatCard = ({ title, value, change, icon: Icon, trend = "up" }) => (
-  <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6 hover:bg-gray-800/70 transition-all duration-300">
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    whileHover={{ y: -5 }}
+    className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6 hover:bg-gray-800/70 transition-all duration-300"
+  >
     <div className="flex items-center justify-between">
       <div>
         <p className="text-gray-400 text-sm font-medium">{title}</p>
@@ -140,15 +153,21 @@ const StatCard = ({ title, value, change, icon: Icon, trend = "up" }) => (
           </span>
         </div>
       </div>
-      <div className="p-3 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 rounded-lg">
+      <motion.div
+        whileHover={{ rotate: 360 }}
+        transition={{ duration: 0.5 }}
+        className="p-3 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 rounded-lg"
+      >
         <Icon className="w-6 h-6 text-indigo-400" />
-      </div>
+      </motion.div>
     </div>
-  </div>
+  </motion.div>
 );
 
 const TimeFilterButton = ({ period, currentPeriod, onClick, children }) => (
-  <button
+  <motion.button
+    whileHover={{ scale: 1.05 }}
+    whileTap={{ scale: 0.95 }}
     onClick={() => onClick(period)}
     className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
       currentPeriod === period
@@ -157,20 +176,24 @@ const TimeFilterButton = ({ period, currentPeriod, onClick, children }) => (
     }`}
   >
     {children}
-  </button>
+  </motion.button>
 );
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-gray-900/95 backdrop-blur-sm border border-gray-700 p-3 rounded-lg shadow-xl">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="bg-gray-900/95 backdrop-blur-sm border border-gray-700 p-3 rounded-lg shadow-xl"
+      >
         <p className="text-white font-medium mb-2">{label}</p>
         {payload.map((entry, index) => (
           <p key={index} className="text-sm" style={{ color: entry.color }}>
             {entry.name}: {entry.value}
           </p>
         ))}
-      </div>
+      </motion.div>
     );
   }
   return null;
@@ -181,6 +204,8 @@ export default function Dashboard() {
   const [data, setData] = useState([]);
   const [pieData, setPieData] = useState([]);
   const [teamData, setTeamData] = useState([]);
+  const [activeSection, setActiveSection] = useState('analytics');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     setData(generateData(timePeriod));
@@ -193,6 +218,299 @@ export default function Dashboard() {
   const totalConversions = data.reduce((sum, item) => sum + item.conversions, 0);
   const avgCTR = (data.reduce((sum, item) => sum + parseFloat(item.ctr), 0) / data.length).toFixed(2);
 
+  const sections = [
+    { id: 'analytics', name: 'Analytics', icon: Activity },
+    { id: 'pricing', name: 'Pricing Calculator', icon: DollarSign },
+    { id: 'demo', name: 'Product Demo', icon: Play },
+    { id: 'blog', name: 'Resources & Blog', icon: BookOpen }
+  ];
+
+  const renderSection = () => {
+    switch (activeSection) {
+      case 'pricing':
+        return <PricingCalculator />;
+      case 'demo':
+        return <DemoVideo />;
+      case 'blog':
+        return <BlogSection />;
+      default:
+        return (
+          <>
+            {/* Stats Cards */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+            >
+              <StatCard
+                title="Total Revenue"
+                value={`$${(totalRevenue / 1000).toFixed(1)}K`}
+                change="+12.5%"
+                icon={DollarSign}
+                trend="up"
+              />
+              <StatCard
+                title="Total Visitors"
+                value={totalVisitors.toLocaleString()}
+                change="+8.2%"
+                icon={Eye}
+                trend="up"
+              />
+              <StatCard
+                title="Conversions"
+                value={totalConversions.toLocaleString()}
+                change="+15.3%"
+                icon={Target}
+                trend="up"
+              />
+              <StatCard
+                title="Avg. CTR"
+                value={`${avgCTR}%`}
+                change="-2.1%"
+                icon={MousePointer}
+                trend="down"
+              />
+            </motion.div>
+
+            {/* Charts Grid */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="grid grid-cols-1 lg:grid-cols-2 gap-8"
+            >
+              {/* Revenue Trend */}
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                className="bg-gray-800/30 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 hover:bg-gray-800/40 transition-all duration-300"
+              >
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-semibold text-white">Revenue Trend</h2>
+                  <div className="p-2 bg-indigo-500/20 rounded-lg">
+                    <TrendingUp className="w-5 h-5 text-indigo-400" />
+                  </div>
+                </div>
+                <ResponsiveContainer width="100%" height={300}>
+                  <AreaChart data={data}>
+                    <defs>
+                      <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#6366F1" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="#6366F1" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                    <XAxis 
+                      dataKey="date" 
+                      stroke="#9CA3AF"
+                      fontSize={12}
+                    />
+                    <YAxis 
+                      stroke="#9CA3AF"
+                      fontSize={12}
+                      tickFormatter={(value) => `$${(value/1000).toFixed(0)}K`}
+                    />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Area 
+                      type="monotone" 
+                      dataKey="revenue" 
+                      stroke="#6366F1" 
+                      strokeWidth={3}
+                      fill="url(#revenueGradient)"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </motion.div>
+
+              {/* Visitors & Conversions */}
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                className="bg-gray-800/30 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 hover:bg-gray-800/40 transition-all duration-300"
+              >
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-semibold text-white">Visitors & Conversions</h2>
+                  <div className="p-2 bg-cyan-500/20 rounded-lg">
+                    <Users className="w-5 h-5 text-cyan-400" />
+                  </div>
+                </div>
+                <ResponsiveContainer width="100%" height={300}>
+                  <LineChart data={data}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                    <XAxis 
+                      dataKey="date" 
+                      stroke="#9CA3AF"
+                      fontSize={12}
+                    />
+                    <YAxis 
+                      stroke="#9CA3AF"
+                      fontSize={12}
+                    />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Legend />
+                    <Line 
+                      type="monotone" 
+                      dataKey="visitors" 
+                      stroke="#06B6D4" 
+                      strokeWidth={3}
+                      dot={{ fill: '#06B6D4', strokeWidth: 2, r: 4 }}
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="conversions" 
+                      stroke="#F59E0B" 
+                      strokeWidth={3}
+                      dot={{ fill: '#F59E0B', strokeWidth: 2, r: 4 }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </motion.div>
+
+              {/* Team Performance */}
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                className="bg-gray-800/30 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 hover:bg-gray-800/40 transition-all duration-300"
+              >
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-semibold text-white">Team Performance</h2>
+                  <div className="p-2 bg-orange-500/20 rounded-lg">
+                    <Zap className="w-5 h-5 text-orange-400" />
+                  </div>
+                </div>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={teamData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                    <XAxis 
+                      dataKey="name" 
+                      stroke="#9CA3AF"
+                      fontSize={12}
+                    />
+                    <YAxis 
+                      stroke="#9CA3AF"
+                      fontSize={12}
+                    />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Bar 
+                      dataKey="performance" 
+                      fill="#F59E0B"
+                      radius={[4, 4, 0, 0]}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </motion.div>
+
+              {/* Traffic Sources */}
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                className="bg-gray-800/30 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 hover:bg-gray-800/40 transition-all duration-300"
+              >
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-semibold text-white">Traffic Sources</h2>
+                  <div className="p-2 bg-purple-500/20 rounded-lg">
+                    <Target className="w-5 h-5 text-purple-400" />
+                  </div>
+                </div>
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      data={pieData}
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="value"
+                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                      labelLine={false}
+                    >
+                      {pieData.map((entry, index) => (
+                        <Cell 
+                          key={`cell-${index}`} 
+                          fill={COLORS[index % COLORS.length]} 
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip content={<CustomTooltip />} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </motion.div>
+            </motion.div>
+
+            {/* Additional Metrics */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="grid grid-cols-1 md:grid-cols-3 gap-6"
+            >
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                className="bg-gray-800/30 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6"
+              >
+                <h3 className="text-lg font-semibold text-white mb-4">Bounce Rate Trend</h3>
+                <ResponsiveContainer width="100%" height={200}>
+                  <LineChart data={data}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                    <XAxis dataKey="date" stroke="#9CA3AF" fontSize={10} />
+                    <YAxis stroke="#9CA3AF" fontSize={10} />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Line 
+                      type="monotone" 
+                      dataKey="bounceRate" 
+                      stroke="#EF4444" 
+                      strokeWidth={2}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </motion.div>
+
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                className="bg-gray-800/30 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6"
+              >
+                <h3 className="text-lg font-semibold text-white mb-4">CTR Performance</h3>
+                <ResponsiveContainer width="100%" height={200}>
+                  <BarChart data={data.slice(-7)}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                    <XAxis dataKey="date" stroke="#9CA3AF" fontSize={10} />
+                    <YAxis stroke="#9CA3AF" fontSize={10} />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Bar 
+                      dataKey="ctr" 
+                      fill="#10B981"
+                      radius={[2, 2, 0, 0]}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </motion.div>
+
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                className="bg-gray-800/30 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6"
+              >
+                <h3 className="text-lg font-semibold text-white mb-4">Quick Stats</h3>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-400">Avg. Session Duration</span>
+                    <span className="text-white font-semibold">4m 32s</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-400">Pages per Session</span>
+                    <span className="text-white font-semibold">3.2</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-400">Conversion Rate</span>
+                    <span className="text-white font-semibold">2.8%</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-400">ROI</span>
+                    <span className="text-green-400 font-semibold">+340%</span>
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+          </>
+        );
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
       {/* Header */}
@@ -200,9 +518,13 @@ export default function Dashboard() {
         <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg">
+              <motion.div
+                whileHover={{ rotate: 360 }}
+                transition={{ duration: 0.5 }}
+                className="p-2 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg"
+              >
                 <Activity className="w-6 h-6 text-white" />
-              </div>
+              </motion.div>
               <div>
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
                   ADmyBRAND Analytics
@@ -211,263 +533,101 @@ export default function Dashboard() {
               </div>
             </div>
             
-            <div className="flex items-center space-x-2">
-              <Calendar className="w-4 h-4 text-gray-400" />
-              <div className="flex space-x-1">
-                <TimeFilterButton period="1w" currentPeriod={timePeriod} onClick={setTimePeriod}>
-                  1W
-                </TimeFilterButton>
-                <TimeFilterButton period="1m" currentPeriod={timePeriod} onClick={setTimePeriod}>
-                  1M
-                </TimeFilterButton>
-                <TimeFilterButton period="3m" currentPeriod={timePeriod} onClick={setTimePeriod}>
-                  3M
-                </TimeFilterButton>
-                <TimeFilterButton period="6m" currentPeriod={timePeriod} onClick={setTimePeriod}>
-                  6M
-                </TimeFilterButton>
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <Calendar className="w-4 h-4 text-gray-400" />
+                <div className="flex space-x-1">
+                  <TimeFilterButton period="1w" currentPeriod={timePeriod} onClick={setTimePeriod}>
+                    1W
+                  </TimeFilterButton>
+                  <TimeFilterButton period="1m" currentPeriod={timePeriod} onClick={setTimePeriod}>
+                    1M
+                  </TimeFilterButton>
+                  <TimeFilterButton period="3m" currentPeriod={timePeriod} onClick={setTimePeriod}>
+                    3M
+                  </TimeFilterButton>
+                  <TimeFilterButton period="6m" currentPeriod={timePeriod} onClick={setTimePeriod}>
+                    6M
+                  </TimeFilterButton>
+                </div>
               </div>
             </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="md:hidden p-2 bg-gray-800/50 rounded-lg"
+            >
+              {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+          </div>
+
+          {/* Mobile Navigation */}
+          <AnimatePresence>
+            {isMobileMenuOpen && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="md:hidden mt-4 space-y-2"
+              >
+                <div className="flex flex-wrap gap-2">
+                  <TimeFilterButton period="1w" currentPeriod={timePeriod} onClick={setTimePeriod}>
+                    1W
+                  </TimeFilterButton>
+                  <TimeFilterButton period="1m" currentPeriod={timePeriod} onClick={setTimePeriod}>
+                    1M
+                  </TimeFilterButton>
+                  <TimeFilterButton period="3m" currentPeriod={timePeriod} onClick={setTimePeriod}>
+                    3M
+                  </TimeFilterButton>
+                  <TimeFilterButton period="6m" currentPeriod={timePeriod} onClick={setTimePeriod}>
+                    6M
+                  </TimeFilterButton>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+
+      {/* Section Navigation */}
+      <div className="border-b border-gray-700/30 bg-gray-900/30">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex space-x-1 overflow-x-auto">
+            {sections.map((section) => (
+              <motion.button
+                key={section.id}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setActiveSection(section.id)}
+                className={`flex items-center space-x-2 px-4 py-3 text-sm font-medium whitespace-nowrap transition-all ${
+                  activeSection === section.id
+                    ? "text-indigo-400 border-b-2 border-indigo-400"
+                    : "text-gray-400 hover:text-gray-300"
+                }`}
+              >
+                <section.icon className="w-4 h-4" />
+                <span>{section.name}</span>
+              </motion.button>
+            ))}
           </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8 space-y-8">
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <StatCard
-            title="Total Revenue"
-            value={`$${(totalRevenue / 1000).toFixed(1)}K`}
-            change="+12.5%"
-            icon={DollarSign}
-            trend="up"
-          />
-          <StatCard
-            title="Total Visitors"
-            value={totalVisitors.toLocaleString()}
-            change="+8.2%"
-            icon={Eye}
-            trend="up"
-          />
-          <StatCard
-            title="Conversions"
-            value={totalConversions.toLocaleString()}
-            change="+15.3%"
-            icon={Target}
-            trend="up"
-          />
-          <StatCard
-            title="Avg. CTR"
-            value={`${avgCTR}%`}
-            change="-2.1%"
-            icon={MousePointer}
-            trend="down"
-          />
-        </div>
-
-        {/* Charts Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Revenue Trend */}
-          <div className="bg-gray-800/30 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 hover:bg-gray-800/40 transition-all duration-300">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-white">Revenue Trend</h2>
-              <div className="p-2 bg-indigo-500/20 rounded-lg">
-                <TrendingUp className="w-5 h-5 text-indigo-400" />
-              </div>
-            </div>
-            <ResponsiveContainer width="100%" height={300}>
-              <AreaChart data={data}>
-                <defs>
-                  <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#6366F1" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#6366F1" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                <XAxis 
-                  dataKey="date" 
-                  stroke="#9CA3AF"
-                  fontSize={12}
-                />
-                <YAxis 
-                  stroke="#9CA3AF"
-                  fontSize={12}
-                  tickFormatter={(value) => `$${(value/1000).toFixed(0)}K`}
-                />
-                <Tooltip content={<CustomTooltip />} />
-                <Area 
-                  type="monotone" 
-                  dataKey="revenue" 
-                  stroke="#6366F1" 
-                  strokeWidth={3}
-                  fill="url(#revenueGradient)"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-
-          {/* Visitors & Conversions */}
-          <div className="bg-gray-800/30 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 hover:bg-gray-800/40 transition-all duration-300">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-white">Visitors & Conversions</h2>
-              <div className="p-2 bg-cyan-500/20 rounded-lg">
-                <Users className="w-5 h-5 text-cyan-400" />
-              </div>
-            </div>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={data}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                <XAxis 
-                  dataKey="date" 
-                  stroke="#9CA3AF"
-                  fontSize={12}
-                />
-                <YAxis 
-                  stroke="#9CA3AF"
-                  fontSize={12}
-                />
-                <Tooltip content={<CustomTooltip />} />
-                <Legend />
-                <Line 
-                  type="monotone" 
-                  dataKey="visitors" 
-                  stroke="#06B6D4" 
-                  strokeWidth={3}
-                  dot={{ fill: '#06B6D4', strokeWidth: 2, r: 4 }}
-                />
-                <Line 
-                  type="monotone" 
-                  dataKey="conversions" 
-                  stroke="#F59E0B" 
-                  strokeWidth={3}
-                  dot={{ fill: '#F59E0B', strokeWidth: 2, r: 4 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-
-          {/* Team Performance */}
-          <div className="bg-gray-800/30 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 hover:bg-gray-800/40 transition-all duration-300">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-white">Team Performance</h2>
-              <div className="p-2 bg-orange-500/20 rounded-lg">
-                <Zap className="w-5 h-5 text-orange-400" />
-              </div>
-            </div>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={teamData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                <XAxis 
-                  dataKey="name" 
-                  stroke="#9CA3AF"
-                  fontSize={12}
-                />
-                <YAxis 
-                  stroke="#9CA3AF"
-                  fontSize={12}
-                />
-                <Tooltip content={<CustomTooltip />} />
-                <Bar 
-                  dataKey="performance" 
-                  fill="#F59E0B"
-                  radius={[4, 4, 0, 0]}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-
-          {/* Traffic Sources */}
-          <div className="bg-gray-800/30 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 hover:bg-gray-800/40 transition-all duration-300">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-white">Traffic Sources</h2>
-              <div className="p-2 bg-purple-500/20 rounded-lg">
-                <Target className="w-5 h-5 text-purple-400" />
-              </div>
-            </div>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={pieData}
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="value"
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                  labelLine={false}
-                >
-                  {pieData.map((entry, index) => (
-                    <Cell 
-                      key={`cell-${index}`} 
-                      fill={COLORS[index % COLORS.length]} 
-                    />
-                  ))}
-                </Pie>
-                <Tooltip content={<CustomTooltip />} />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* Additional Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-gray-800/30 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-white mb-4">Bounce Rate Trend</h3>
-            <ResponsiveContainer width="100%" height={200}>
-              <LineChart data={data}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                <XAxis dataKey="date" stroke="#9CA3AF" fontSize={10} />
-                <YAxis stroke="#9CA3AF" fontSize={10} />
-                <Tooltip content={<CustomTooltip />} />
-                <Line 
-                  type="monotone" 
-                  dataKey="bounceRate" 
-                  stroke="#EF4444" 
-                  strokeWidth={2}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-
-          <div className="bg-gray-800/30 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-white mb-4">CTR Performance</h3>
-            <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={data.slice(-7)}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                <XAxis dataKey="date" stroke="#9CA3AF" fontSize={10} />
-                <YAxis stroke="#9CA3AF" fontSize={10} />
-                <Tooltip content={<CustomTooltip />} />
-                <Bar 
-                  dataKey="ctr" 
-                  fill="#10B981"
-                  radius={[2, 2, 0, 0]}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-
-          <div className="bg-gray-800/30 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-white mb-4">Quick Stats</h3>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-gray-400">Avg. Session Duration</span>
-                <span className="text-white font-semibold">4m 32s</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-400">Pages per Session</span>
-                <span className="text-white font-semibold">3.2</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-400">Conversion Rate</span>
-                <span className="text-white font-semibold">2.8%</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-400">ROI</span>
-                <span className="text-green-400 font-semibold">+340%</span>
-              </div>
-            </div>
-          </div>
-        </div>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeSection}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            {renderSection()}
+          </motion.div>
+        </AnimatePresence>
       </div>
     </div>
   );
