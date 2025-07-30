@@ -17,23 +17,29 @@ export const ThemeProvider = ({ children }) => {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // Get theme from localStorage or default to dark
-    const savedTheme = localStorage.getItem('theme') || 'dark';
+    // Check for saved theme preference or default to dark
+    const savedTheme = localStorage.getItem('admybrand-theme') || 'dark';
     setTheme(savedTheme);
     setMounted(true);
   }, []);
 
   useEffect(() => {
     if (mounted) {
-      // Update data-theme attribute on document
+      // Update document attributes
       document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.classList.remove('light', 'dark');
+      document.documentElement.classList.add(theme);
+      
       // Save to localStorage
-      localStorage.setItem('theme', theme);
+      localStorage.setItem('admybrand-theme', theme);
     }
   }, [theme, mounted]);
 
   const toggleTheme = () => {
-    setTheme(prevTheme => prevTheme === 'dark' ? 'light' : 'dark');
+    setTheme(prevTheme => {
+      const newTheme = prevTheme === 'dark' ? 'light' : 'dark';
+      return newTheme;
+    });
   };
 
   const value = {

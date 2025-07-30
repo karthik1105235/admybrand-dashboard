@@ -40,6 +40,7 @@ import PricingCalculator from "./PricingCalculator";
 import BlogSection from "./BlogSection";
 import DemoVideo from "./DemoVideo";
 import ThemeToggle from "./ThemeToggle";
+import { useTheme } from "../contexts/ThemeContext";
 
 // Generate dynamic data based on time period
 const generateData = (period) => {
@@ -132,17 +133,24 @@ const generateTeamData = (period) => {
 
 const COLORS = ["#6366F1", "#06B6D4", "#F59E0B", "#EF4444", "#10B981"];
 
-const StatCard = ({ title, value, change, icon: Icon, trend = "up" }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    whileHover={{ y: -8, scale: 1.02 }}
-    className="glass-card shadow-professional border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all duration-300 group"
-  >
+const StatCard = ({ title, value, change, icon: Icon, trend = "up" }) => {
+  const { theme } = useTheme();
+  
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -8, scale: 1.02 }}
+      className={`backdrop-blur-xl border rounded-2xl p-6 transition-all duration-300 group shadow-xl hover:shadow-2xl ${
+        theme === 'dark' 
+          ? 'bg-black/20 border-white/10 hover:border-white/20 hover:bg-black/30' 
+          : 'bg-white/80 border-gray-200 hover:border-gray-300 hover:bg-white/90'
+      }`}
+    >
     <div className="flex items-center justify-between">
-      <div>
-        <p className="text-gray-300 text-sm font-medium mb-2">{title}</p>
-        <p className="text-3xl font-bold gradient-text-primary mb-2">{value}</p>
+             <div className="flex-1">
+         <p className={`text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>{title}</p>
+        <p className="text-3xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent mb-2">{value}</p>
         <div className="flex items-center">
           {trend === "up" ? (
             <ArrowUpRight className="w-4 h-4 text-green-400 mr-1" />
@@ -154,41 +162,60 @@ const StatCard = ({ title, value, change, icon: Icon, trend = "up" }) => (
           </span>
         </div>
       </div>
-      <motion.div
-        whileHover={{ rotate: 360, scale: 1.1 }}
-        transition={{ duration: 0.5 }}
-        className="p-4 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 rounded-xl border border-white/10 group-hover:border-white/20 transition-all duration-300"
-      >
+             <motion.div
+         whileHover={{ rotate: 360, scale: 1.1 }}
+         transition={{ duration: 0.5 }}
+         className={`p-4 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 rounded-xl border transition-all duration-300 ml-4 ${
+           theme === 'dark' 
+             ? 'border-white/10 group-hover:border-white/20' 
+             : 'border-gray-200 group-hover:border-gray-300'
+         }`}
+       >
         <Icon className="w-7 h-7 text-indigo-400" />
-      </motion.div>
-    </div>
-  </motion.div>
-);
+             </motion.div>
+     </div>
+   </motion.div>
+   );
+ };
 
-const TimeFilterButton = ({ period, currentPeriod, onClick, children }) => (
-  <motion.button
-    whileHover={{ scale: 1.05 }}
-    whileTap={{ scale: 0.95 }}
-    onClick={() => onClick(period)}
-    className={`px-4 py-2 rounded-xl font-semibold transition-all duration-300 ${
-      currentPeriod === period
-        ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-600/25 border border-white/20"
-        : "glass-card text-gray-300 hover:text-white hover:border-white/20 border border-white/5"
-    }`}
-  >
-    {children}
-  </motion.button>
-);
+const TimeFilterButton = ({ period, currentPeriod, onClick, children }) => {
+  const { theme } = useTheme();
+  
+  return (
+    <motion.button
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      onClick={() => onClick(period)}
+      className={`px-4 py-2 rounded-xl font-semibold transition-all duration-300 ${
+        currentPeriod === period
+          ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-600/25 border border-white/20"
+          : `backdrop-blur-xl border hover:border-white/20 ${
+              theme === 'dark' 
+                ? 'bg-black/20 text-gray-300 hover:text-white border-white/10 hover:bg-black/30' 
+                : 'bg-white/60 text-gray-600 hover:text-gray-900 border-gray-200 hover:bg-white/80'
+            }`
+      }`}
+    >
+      {children}
+    </motion.button>
+  );
+};
 
 const CustomTooltip = ({ active, payload, label }) => {
+  const { theme } = useTheme();
+  
   if (active && payload && payload.length) {
     return (
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="glass-card border border-white/20 p-4 rounded-xl shadow-glow"
+        className={`backdrop-blur-xl border p-4 rounded-xl shadow-lg ${
+          theme === 'dark' 
+            ? 'bg-gray-900/90 border-white/20' 
+            : 'bg-white/95 border-gray-200'
+        }`}
       >
-        <p className="text-white font-semibold mb-2 neon-glow-blue">{label}</p>
+        <p className={`font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{label}</p>
         {payload.map((entry, index) => (
           <p key={index} className="text-sm font-medium" style={{ color: entry.color }}>
             {entry.name}: {entry.value}
@@ -201,6 +228,7 @@ const CustomTooltip = ({ active, payload, label }) => {
 };
 
 export default function Dashboard() {
+  const { theme, mounted } = useTheme();
   const [timePeriod, setTimePeriod] = useState('1m');
   const [data, setData] = useState([]);
   const [pieData, setPieData] = useState([]);
@@ -280,16 +308,22 @@ export default function Dashboard() {
               transition={{ delay: 0.2 }}
               className="grid grid-cols-1 lg:grid-cols-2 gap-8"
             >
-              {/* Revenue Trend */}
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                className="glass-card shadow-professional border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all duration-300"
-              >
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-bold gradient-text-primary">Revenue Trend</h2>
-                  <div className="p-3 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 rounded-xl border border-white/10">
-                    <TrendingUp className="w-6 h-6 text-indigo-400" />
-                  </div>
+                             {/* Revenue Trend */}
+               <motion.div
+                 whileHover={{ scale: 1.02 }}
+                 className={`backdrop-blur-xl border rounded-2xl p-6 transition-all duration-300 shadow-xl hover:shadow-2xl ${
+                   theme === 'dark' 
+                     ? 'bg-black/20 border-white/10 hover:border-white/20 hover:bg-black/30' 
+                     : 'bg-white/80 border-gray-200 hover:border-gray-300 hover:bg-white/90'
+                 }`}
+               >
+                 <div className="flex items-center justify-between mb-6">
+                   <h2 className="text-xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">Revenue Trend</h2>
+                                     <div className={`p-3 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 rounded-xl border ${
+                     theme === 'dark' ? 'border-white/10' : 'border-gray-200'
+                   }`}>
+                     <TrendingUp className="w-6 h-6 text-indigo-400" />
+                   </div>
                 </div>
                 <ResponsiveContainer width="100%" height={300}>
                   <AreaChart data={data}>
@@ -299,19 +333,19 @@ export default function Dashboard() {
                         <stop offset="95%" stopColor="#6366F1" stopOpacity={0}/>
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                    <XAxis 
-                      dataKey="date" 
-                      stroke="#ffffff"
-                      fontSize={12}
-                      fontWeight={500}
-                    />
-                    <YAxis 
-                      stroke="#ffffff"
-                      fontSize={12}
-                      fontWeight={500}
-                      tickFormatter={(value) => `$${(value/1000).toFixed(0)}K`}
-                    />
+                                         <CartesianGrid strokeDasharray="3 3" stroke={theme === 'dark' ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"} />
+                     <XAxis 
+                       dataKey="date" 
+                       stroke={theme === 'dark' ? "#ffffff" : "#374151"}
+                       fontSize={12}
+                       fontWeight={500}
+                     />
+                     <YAxis 
+                       stroke={theme === 'dark' ? "#ffffff" : "#374151"}
+                       fontSize={12}
+                       fontWeight={500}
+                       tickFormatter={(value) => `$${(value/1000).toFixed(0)}K`}
+                     />
                     <Tooltip content={<CustomTooltip />} />
                     <Area 
                       type="monotone" 
@@ -324,31 +358,37 @@ export default function Dashboard() {
                 </ResponsiveContainer>
               </motion.div>
 
-              {/* Visitors & Conversions */}
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                className="glass-card shadow-professional border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all duration-300"
-              >
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-bold gradient-text-secondary">Visitors & Conversions</h2>
-                  <div className="p-3 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-xl border border-white/10">
-                    <Users className="w-6 h-6 text-cyan-400" />
-                  </div>
+                             {/* Visitors & Conversions */}
+               <motion.div
+                 whileHover={{ scale: 1.02 }}
+                 className={`backdrop-blur-xl border rounded-2xl p-6 transition-all duration-300 shadow-xl hover:shadow-2xl ${
+                   theme === 'dark' 
+                     ? 'bg-black/20 border-white/10 hover:border-white/20 hover:bg-black/30' 
+                     : 'bg-white/80 border-gray-200 hover:border-gray-300 hover:bg-white/90'
+                 }`}
+               >
+                 <div className="flex items-center justify-between mb-6">
+                   <h2 className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">Visitors & Conversions</h2>
+                                     <div className={`p-3 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-xl border ${
+                     theme === 'dark' ? 'border-white/10' : 'border-gray-200'
+                   }`}>
+                     <Users className="w-6 h-6 text-cyan-400" />
+                   </div>
                 </div>
                 <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={data}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                    <XAxis 
-                      dataKey="date" 
-                      stroke="#ffffff"
-                      fontSize={12}
-                      fontWeight={500}
-                    />
-                    <YAxis 
-                      stroke="#ffffff"
-                      fontSize={12}
-                      fontWeight={500}
-                    />
+                                     <LineChart data={data}>
+                     <CartesianGrid strokeDasharray="3 3" stroke={theme === 'dark' ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"} />
+                     <XAxis 
+                       dataKey="date" 
+                       stroke={theme === 'dark' ? "#ffffff" : "#374151"}
+                       fontSize={12}
+                       fontWeight={500}
+                     />
+                     <YAxis 
+                       stroke={theme === 'dark' ? "#ffffff" : "#374151"}
+                       fontSize={12}
+                       fontWeight={500}
+                     />
                     <Tooltip content={<CustomTooltip />} />
                     <Legend />
                     <Line 
@@ -369,31 +409,37 @@ export default function Dashboard() {
                 </ResponsiveContainer>
               </motion.div>
 
-              {/* Team Performance */}
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                className="glass-card shadow-professional border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all duration-300"
-              >
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-bold gradient-text-primary">Team Performance</h2>
-                  <div className="p-3 bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-xl border border-white/10">
-                    <Zap className="w-6 h-6 text-orange-400" />
-                  </div>
+                             {/* Team Performance */}
+               <motion.div
+                 whileHover={{ scale: 1.02 }}
+                 className={`backdrop-blur-xl border rounded-2xl p-6 transition-all duration-300 shadow-xl hover:shadow-2xl ${
+                   theme === 'dark' 
+                     ? 'bg-black/20 border-white/10 hover:border-white/20 hover:bg-black/30' 
+                     : 'bg-white/80 border-gray-200 hover:border-gray-300 hover:bg-white/90'
+                 }`}
+               >
+                 <div className="flex items-center justify-between mb-6">
+                   <h2 className="text-xl font-bold bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">Team Performance</h2>
+                                     <div className={`p-3 bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-xl border ${
+                     theme === 'dark' ? 'border-white/10' : 'border-gray-200'
+                   }`}>
+                     <Zap className="w-6 h-6 text-orange-400" />
+                   </div>
                 </div>
                 <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={teamData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                    <XAxis 
-                      dataKey="name" 
-                      stroke="#ffffff"
-                      fontSize={12}
-                      fontWeight={500}
-                    />
-                    <YAxis 
-                      stroke="#ffffff"
-                      fontSize={12}
-                      fontWeight={500}
-                    />
+                                     <BarChart data={teamData}>
+                     <CartesianGrid strokeDasharray="3 3" stroke={theme === 'dark' ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"} />
+                     <XAxis 
+                       dataKey="name" 
+                       stroke={theme === 'dark' ? "#ffffff" : "#374151"}
+                       fontSize={12}
+                       fontWeight={500}
+                     />
+                     <YAxis 
+                       stroke={theme === 'dark' ? "#ffffff" : "#374151"}
+                       fontSize={12}
+                       fontWeight={500}
+                     />
                     <Tooltip content={<CustomTooltip />} />
                     <Bar 
                       dataKey="performance" 
@@ -404,16 +450,22 @@ export default function Dashboard() {
                 </ResponsiveContainer>
               </motion.div>
 
-              {/* Traffic Sources */}
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                className="glass-card shadow-professional border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all duration-300"
-              >
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-bold gradient-text-secondary">Traffic Sources</h2>
-                  <div className="p-3 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl border border-white/10">
-                    <Target className="w-6 h-6 text-purple-400" />
-                  </div>
+                             {/* Traffic Sources */}
+               <motion.div
+                 whileHover={{ scale: 1.02 }}
+                 className={`backdrop-blur-xl border rounded-2xl p-6 transition-all duration-300 shadow-xl hover:shadow-2xl ${
+                   theme === 'dark' 
+                     ? 'bg-black/20 border-white/10 hover:border-white/20 hover:bg-black/30' 
+                     : 'bg-white/80 border-gray-200 hover:border-gray-300 hover:bg-white/90'
+                 }`}
+               >
+                 <div className="flex items-center justify-between mb-6">
+                   <h2 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Traffic Sources</h2>
+                                     <div className={`p-3 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl border ${
+                     theme === 'dark' ? 'border-white/10' : 'border-gray-200'
+                   }`}>
+                     <Target className="w-6 h-6 text-purple-400" />
+                   </div>
                 </div>
                 <ResponsiveContainer width="100%" height={300}>
                   <PieChart>
@@ -447,16 +499,20 @@ export default function Dashboard() {
               transition={{ delay: 0.4 }}
               className="grid grid-cols-1 md:grid-cols-3 gap-6"
             >
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                className="glass-card shadow-professional border border-white/10 rounded-xl p-6 hover:border-white/20 transition-all duration-300"
-              >
-                <h3 className="text-lg font-bold gradient-text-primary mb-4">Bounce Rate Trend</h3>
-                <ResponsiveContainer width="100%" height={200}>
-                  <LineChart data={data}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                    <XAxis dataKey="date" stroke="#ffffff" fontSize={10} fontWeight={500} />
-                    <YAxis stroke="#ffffff" fontSize={10} fontWeight={500} />
+                             <motion.div
+                 whileHover={{ scale: 1.02 }}
+                 className={`backdrop-blur-xl border rounded-xl p-6 transition-all duration-300 shadow-xl hover:shadow-2xl ${
+                   theme === 'dark' 
+                     ? 'bg-black/20 border-white/10 hover:border-white/20 hover:bg-black/30' 
+                     : 'bg-white/80 border-gray-200 hover:border-gray-300 hover:bg-white/90'
+                 }`}
+               >
+                 <h3 className="text-lg font-bold bg-gradient-to-r from-red-400 to-pink-400 bg-clip-text text-transparent mb-4">Bounce Rate Trend</h3>
+                                 <ResponsiveContainer width="100%" height={200}>
+                   <LineChart data={data}>
+                     <CartesianGrid strokeDasharray="3 3" stroke={theme === 'dark' ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"} />
+                     <XAxis dataKey="date" stroke={theme === 'dark' ? "#ffffff" : "#374151"} fontSize={10} fontWeight={500} />
+                     <YAxis stroke={theme === 'dark' ? "#ffffff" : "#374151"} fontSize={10} fontWeight={500} />
                     <Tooltip content={<CustomTooltip />} />
                     <Line 
                       type="monotone" 
@@ -468,16 +524,20 @@ export default function Dashboard() {
                 </ResponsiveContainer>
               </motion.div>
 
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                className="glass-card shadow-professional border border-white/10 rounded-xl p-6 hover:border-white/20 transition-all duration-300"
-              >
-                <h3 className="text-lg font-bold gradient-text-secondary mb-4">CTR Performance</h3>
-                <ResponsiveContainer width="100%" height={200}>
-                  <BarChart data={data.slice(-7)}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                    <XAxis dataKey="date" stroke="#ffffff" fontSize={10} fontWeight={500} />
-                    <YAxis stroke="#ffffff" fontSize={10} fontWeight={500} />
+                             <motion.div
+                 whileHover={{ scale: 1.02 }}
+                 className={`backdrop-blur-xl border rounded-xl p-6 transition-all duration-300 shadow-xl hover:shadow-2xl ${
+                   theme === 'dark' 
+                     ? 'bg-black/20 border-white/10 hover:border-white/20 hover:bg-black/30' 
+                     : 'bg-white/80 border-gray-200 hover:border-gray-300 hover:bg-white/90'
+                 }`}
+               >
+                 <h3 className="text-lg font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent mb-4">CTR Performance</h3>
+                                 <ResponsiveContainer width="100%" height={200}>
+                   <BarChart data={data.slice(-7)}>
+                     <CartesianGrid strokeDasharray="3 3" stroke={theme === 'dark' ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"} />
+                     <XAxis dataKey="date" stroke={theme === 'dark' ? "#ffffff" : "#374151"} fontSize={10} fontWeight={500} />
+                     <YAxis stroke={theme === 'dark' ? "#ffffff" : "#374151"} fontSize={10} fontWeight={500} />
                     <Tooltip content={<CustomTooltip />} />
                     <Bar 
                       dataKey="ctr" 
@@ -488,29 +548,33 @@ export default function Dashboard() {
                 </ResponsiveContainer>
               </motion.div>
 
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                className="glass-card shadow-professional border border-white/10 rounded-xl p-6 hover:border-white/20 transition-all duration-300"
-              >
-                <h3 className="text-lg font-bold gradient-text-primary mb-4">Quick Stats</h3>
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-300">Avg. Session Duration</span>
-                    <span className="text-white font-bold">4m 32s</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-300">Pages per Session</span>
-                    <span className="text-white font-bold">3.2</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-300">Conversion Rate</span>
-                    <span className="text-white font-bold">2.8%</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-300">ROI</span>
-                    <span className="text-green-400 font-bold neon-glow">+340%</span>
-                  </div>
-                </div>
+                             <motion.div
+                 whileHover={{ scale: 1.02 }}
+                 className={`backdrop-blur-xl border rounded-xl p-6 transition-all duration-300 shadow-xl hover:shadow-2xl ${
+                   theme === 'dark' 
+                     ? 'bg-black/20 border-white/10 hover:border-white/20 hover:bg-black/30' 
+                     : 'bg-white/80 border-gray-200 hover:border-gray-300 hover:bg-white/90'
+                 }`}
+               >
+                 <h3 className="text-lg font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent mb-4">Quick Stats</h3>
+                                                    <div className="space-y-4">
+                     <div className="flex justify-between items-center">
+                       <span className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>Avg. Session Duration</span>
+                       <span className={`font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>4m 32s</span>
+                     </div>
+                     <div className="flex justify-between items-center">
+                       <span className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>Pages per Session</span>
+                       <span className={`font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>3.2</span>
+                     </div>
+                     <div className="flex justify-between items-center">
+                       <span className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>Conversion Rate</span>
+                       <span className={`font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>2.8%</span>
+                     </div>
+                     <div className="flex justify-between items-center">
+                       <span className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>ROI</span>
+                       <span className="text-green-400 font-bold neon-glow">+340%</span>
+                     </div>
+                   </div>
               </motion.div>
             </motion.div>
           </>
@@ -519,31 +583,41 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white overflow-x-hidden">
+    <div className={`min-h-screen overflow-x-hidden transition-colors duration-300 ${
+      theme === 'dark' 
+        ? 'bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white' 
+        : 'bg-gradient-to-br from-gray-50 via-white to-gray-100 text-gray-900'
+    }`}>
       {/* Header */}
-      <div className="glass-card border-b border-white/10 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 py-6">
+      <div className={`backdrop-blur-xl border-b sticky top-0 z-50 shadow-2xl transition-colors duration-300 ${
+        theme === 'dark' 
+          ? 'bg-black/20 border-white/10' 
+          : 'bg-white/80 border-gray-200'
+      }`}>
+        <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <motion.div
-                whileHover={{ rotate: 360, scale: 1.1 }}
-                transition={{ duration: 0.5 }}
-                className="p-3 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl border border-white/20"
-              >
+                             <motion.div
+                 whileHover={{ rotate: 360, scale: 1.1 }}
+                 transition={{ duration: 0.5 }}
+                 className={`p-3 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl border shadow-lg ${
+                   theme === 'dark' ? 'border-white/20' : 'border-gray-200'
+                 }`}
+               >
                 <Activity className="w-7 h-7 text-white" />
               </motion.div>
-              <div>
-                <h1 className="text-3xl font-bold gradient-text">
-                  ADmyBRAND Analytics
-                </h1>
-                <p className="text-gray-300 text-sm">Real-time insights & performance metrics</p>
-              </div>
+                             <div>
+                 <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+                   ADmyBRAND Analytics
+                 </h1>
+                 <p className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>Real-time insights & performance metrics</p>
+               </div>
             </div>
             
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <Calendar className="w-4 h-4 text-gray-400" />
+            <div className="hidden md:flex items-center space-x-6">
+                             <div className="flex items-center space-x-3">
+                 <Calendar className={`w-4 h-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`} />
                 <div className="flex space-x-2">
                   <TimeFilterButton period="1w" currentPeriod={timePeriod} onClick={setTimePeriod}>
                     1W
@@ -561,16 +635,20 @@ export default function Dashboard() {
               </div>
               
               {/* Theme Toggle */}
-              <div className="flex items-center space-x-3">
-                <span className="text-sm text-gray-400 font-medium">Theme</span>
-                <ThemeToggle />
-              </div>
+                             <div className="flex items-center space-x-3">
+                 <span className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Theme</span>
+                 <ThemeToggle />
+               </div>
             </div>
 
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2 glass-card rounded-xl border border-white/10"
+              className={`md:hidden p-2 backdrop-blur-xl rounded-xl border transition-all ${
+                theme === 'dark' 
+                  ? 'bg-black/20 border-white/10 hover:bg-black/30' 
+                  : 'bg-white/60 border-gray-200 hover:bg-white/80'
+              }`}
             >
               {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -601,10 +679,12 @@ export default function Dashboard() {
                 </div>
                 
                 {/* Mobile Theme Toggle */}
-                <div className="flex items-center justify-between pt-2 border-t border-white/10">
-                  <span className="text-sm text-gray-400 font-medium">Theme</span>
-                  <ThemeToggle />
-                </div>
+                                 <div className={`flex items-center justify-between pt-2 border-t ${
+                   theme === 'dark' ? 'border-white/10' : 'border-gray-200'
+                 }`}>
+                   <span className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Theme</span>
+                   <ThemeToggle />
+                 </div>
               </motion.div>
             )}
           </AnimatePresence>
@@ -612,7 +692,11 @@ export default function Dashboard() {
       </div>
 
       {/* Section Navigation */}
-      <div className="glass-card border-b border-white/10">
+      <div className={`backdrop-blur-xl border-b shadow-lg transition-colors duration-300 ${
+        theme === 'dark' 
+          ? 'bg-black/15 border-white/10' 
+          : 'bg-white/60 border-gray-200'
+      }`}>
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex space-x-1 overflow-x-auto">
             {sections.map((section) => (
@@ -623,8 +707,10 @@ export default function Dashboard() {
                 onClick={() => setActiveSection(section.id)}
                 className={`flex items-center space-x-2 px-6 py-4 text-sm font-semibold whitespace-nowrap transition-all ${
                   activeSection === section.id
-                    ? "text-indigo-400 border-b-2 border-indigo-400 neon-glow-blue"
-                    : "text-gray-400 hover:text-gray-300"
+                    ? "text-indigo-400 border-b-2 border-indigo-400 bg-indigo-400/10"
+                    : theme === 'dark' 
+                      ? "text-gray-400 hover:text-gray-300 hover:bg-black/20"
+                      : "text-gray-600 hover:text-gray-900 hover:bg-white/60"
                 }`}
               >
                 <section.icon className="w-5 h-5" />
@@ -635,7 +721,8 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-8 space-y-8">
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-6 py-8">
         <AnimatePresence mode="wait">
           <motion.div
             key={activeSection}
@@ -643,6 +730,7 @@ export default function Dashboard() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.3 }}
+            className="space-y-8"
           >
             {renderSection()}
           </motion.div>

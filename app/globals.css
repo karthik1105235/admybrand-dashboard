@@ -13,15 +13,15 @@
 
 /* Dark theme variables */
 [data-theme="dark"] {
-  --bg-primary: #000000;
-  --bg-secondary: #111827;
-  --bg-card: rgba(17, 24, 39, 0.5);
+  --bg-primary: #020617;
+  --bg-secondary: #0f172a;
+  --bg-card: rgba(15, 23, 42, 0.9);
   --text-primary: #ffffff;
-  --text-secondary: #d1d5db;
-  --text-muted: #9ca3af;
-  --border-color: rgba(255, 255, 255, 0.1);
-  --border-hover: rgba(255, 255, 255, 0.2);
-  --glass-bg: rgba(17, 24, 39, 0.3);
+  --text-secondary: #f1f5f9;
+  --text-muted: #64748b;
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(255, 255, 255, 0.15);
+  --glass-bg: rgba(15, 23, 42, 0.7);
   --shadow-color: rgba(0, 0, 0, 0.5);
   --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
   --gradient-secondary: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
@@ -33,9 +33,9 @@
   --bg-primary: #ffffff;
   --bg-secondary: #f8fafc;
   --bg-card: rgba(255, 255, 255, 0.9);
-  --text-primary: #1f2937;
-  --text-secondary: #374151;
-  --text-muted: #6b7280;
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
   --border-color: rgba(0, 0, 0, 0.1);
   --border-hover: rgba(0, 0, 0, 0.2);
   --glass-bg: rgba(255, 255, 255, 0.8);
@@ -65,6 +65,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
   transition: all 0.3s ease;
+  min-height: 100vh;
 }
 
 /* Animated background for dark theme */
@@ -78,8 +79,9 @@ body {
   background: 
     radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
     radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
-    radial-gradient(circle at 40% 40%, rgba(6, 182, 212, 0.1) 0%, transparent 50%);
-  animation: patternMove 20s ease-in-out infinite;
+    radial-gradient(circle at 40% 40%, rgba(6, 182, 212, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 60% 60%, rgba(236, 72, 153, 0.05) 0%, transparent 50%),
+    linear-gradient(135deg, rgba(2, 6, 23, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%);
   z-index: -1;
 }
 
@@ -92,11 +94,9 @@ body {
   width: 100%;
   height: 100%;
   background: 
-    radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
-    radial-gradient(circle at 40% 40%, rgba(6, 182, 212, 0.05) 0%, transparent 50%),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%);
-  animation: patternMove 20s ease-in-out infinite;
+    radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(6, 182, 212, 0.03) 0%, transparent 50%);
   z-index: -1;
 }
 
@@ -209,20 +209,7 @@ body {
   }
 }
 
-@keyframes patternMove {
-  0%, 100% {
-    transform: translate(0, 0) rotate(0deg);
-  }
-  25% {
-    transform: translate(-10px, -10px) rotate(1deg);
-  }
-  50% {
-    transform: translate(10px, -5px) rotate(-1deg);
-  }
-  75% {
-    transform: translate(-5px, 10px) rotate(1deg);
-  }
-}
+
 
 /* Animation classes */
 .animate-slide-down {
@@ -269,7 +256,7 @@ body {
 }
 
 .glass-dark {
-  background: rgba(17, 24, 39, 0.7);
+  background: rgba(30, 41, 59, 0.7);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid var(--border-color);
@@ -302,6 +289,36 @@ body {
     0 2px 4px -1px var(--shadow-color),
     0 0 0 1px var(--border-color),
     0 0 20px rgba(99, 102, 241, 0.2);
+}
+
+/* Enhanced glass morphism */
+.glass-enhanced {
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Dark theme specific enhancements */
+[data-theme="dark"] .glass-card {
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .glass-card:hover {
+  background: rgba(15, 23, 42, 0.9);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 /* Gradient text effects */
