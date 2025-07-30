@@ -533,7 +533,7 @@ export default function Dashboard() {
                 <Activity className="w-7 h-7 text-white" />
               </motion.div>
               <div>
-                <h1 className="text-3xl font-bold gradient-text animate-neon">
+                <h1 className="text-3xl font-bold gradient-text">
                   ADmyBRAND Analytics
                 </h1>
                 <p className="text-gray-300 text-sm">Real-time insights & performance metrics</p>

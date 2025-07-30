@@ -32,7 +32,7 @@
 [data-theme="light"] {
   --bg-primary: #ffffff;
   --bg-secondary: #f8fafc;
-  --bg-card: rgba(255, 255, 255, 0.8);
+  --bg-card: rgba(255, 255, 255, 0.9);
   --text-primary: #1f2937;
   --text-secondary: #374151;
   --text-muted: #6b7280;
@@ -92,9 +92,10 @@ body {
   width: 100%;
   height: 100%;
   background: 
-    radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 40% 40%, rgba(6, 182, 212, 0.05) 0%, transparent 50%);
+    radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(6, 182, 212, 0.05) 0%, transparent 50%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%);
   animation: patternMove 20s ease-in-out infinite;
   z-index: -1;
 }
@@ -178,10 +179,10 @@ body {
 
 @keyframes neonPulse {
   0%, 100% {
-    text-shadow: 0 0 5px currentColor, 0 0 10px currentColor, 0 0 15px currentColor;
+    text-shadow: 0 0 3px currentColor, 0 0 6px currentColor, 0 0 9px currentColor;
   }
   50% {
-    text-shadow: 0 0 10px currentColor, 0 0 20px currentColor, 0 0 30px currentColor;
+    text-shadow: 0 0 6px currentColor, 0 0 12px currentColor, 0 0 18px currentColor;
   }
 }
 
@@ -475,17 +476,17 @@ body {
   animation: gradientShift 15s ease infinite;
 }
 
-/* Neon glow effects */
+/* Neon glow effects - Reduced intensity */
 .neon-glow {
-  text-shadow: 0 0 10px currentColor, 0 0 20px currentColor, 0 0 30px currentColor;
+  text-shadow: 0 0 5px currentColor, 0 0 10px currentColor, 0 0 15px currentColor;
 }
 
 .neon-glow-blue {
-  text-shadow: 0 0 10px #3b82f6, 0 0 20px #3b82f6, 0 0 30px #3b82f6;
+  text-shadow: 0 0 5px #3b82f6, 0 0 10px #3b82f6, 0 0 15px #3b82f6;
 }
 
 .neon-glow-purple {
-  text-shadow: 0 0 10px #8b5cf6, 0 0 20px #8b5cf6, 0 0 30px #8b5cf6;
+  text-shadow: 0 0 5px #8b5cf6, 0 0 10px #8b5cf6, 0 0 15px #8b5cf6;
 }
 
 /* Floating particles effect */
