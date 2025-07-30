@@ -39,6 +39,7 @@ import {
 import PricingCalculator from "./PricingCalculator";
 import BlogSection from "./BlogSection";
 import DemoVideo from "./DemoVideo";
+import ThemeToggle from "./ThemeToggle";
 
 // Generate dynamic data based on time period
 const generateData = (period) => {
@@ -558,6 +559,12 @@ export default function Dashboard() {
                   </TimeFilterButton>
                 </div>
               </div>
+              
+              {/* Theme Toggle */}
+              <div className="flex items-center space-x-3">
+                <span className="text-sm text-gray-400 font-medium">Theme</span>
+                <ThemeToggle />
+              </div>
             </div>
 
             {/* Mobile Menu Button */}
@@ -576,7 +583,7 @@ export default function Dashboard() {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
-                className="md:hidden mt-4 space-y-2"
+                className="md:hidden mt-4 space-y-4"
               >
                 <div className="flex flex-wrap gap-2">
                   <TimeFilterButton period="1w" currentPeriod={timePeriod} onClick={setTimePeriod}>
@@ -591,6 +598,12 @@ export default function Dashboard() {
                   <TimeFilterButton period="6m" currentPeriod={timePeriod} onClick={setTimePeriod}>
                     6M
                   </TimeFilterButton>
+                </div>
+                
+                {/* Mobile Theme Toggle */}
+                <div className="flex items-center justify-between pt-2 border-t border-white/10">
+                  <span className="text-sm text-gray-400 font-medium">Theme</span>
+                  <ThemeToggle />
                 </div>
               </motion.div>
             )}
