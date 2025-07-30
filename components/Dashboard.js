@@ -135,30 +135,30 @@ const StatCard = ({ title, value, change, icon: Icon, trend = "up" }) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
-    whileHover={{ y: -5 }}
-    className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6 hover:bg-gray-800/70 transition-all duration-300"
+    whileHover={{ y: -8, scale: 1.02 }}
+    className="glass-card shadow-professional border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all duration-300 group"
   >
     <div className="flex items-center justify-between">
       <div>
-        <p className="text-gray-400 text-sm font-medium">{title}</p>
-        <p className="text-2xl font-bold text-white mt-2">{value}</p>
-        <div className="flex items-center mt-2">
+        <p className="text-gray-300 text-sm font-medium mb-2">{title}</p>
+        <p className="text-3xl font-bold gradient-text-primary mb-2">{value}</p>
+        <div className="flex items-center">
           {trend === "up" ? (
             <ArrowUpRight className="w-4 h-4 text-green-400 mr-1" />
           ) : (
             <ArrowDownRight className="w-4 h-4 text-red-400 mr-1" />
           )}
-          <span className={`text-sm font-medium ${trend === "up" ? "text-green-400" : "text-red-400"}`}>
+          <span className={`text-sm font-semibold ${trend === "up" ? "text-green-400" : "text-red-400"}`}>
             {change}
           </span>
         </div>
       </div>
       <motion.div
-        whileHover={{ rotate: 360 }}
+        whileHover={{ rotate: 360, scale: 1.1 }}
         transition={{ duration: 0.5 }}
-        className="p-3 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 rounded-lg"
+        className="p-4 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 rounded-xl border border-white/10 group-hover:border-white/20 transition-all duration-300"
       >
-        <Icon className="w-6 h-6 text-indigo-400" />
+        <Icon className="w-7 h-7 text-indigo-400" />
       </motion.div>
     </div>
   </motion.div>
@@ -169,10 +169,10 @@ const TimeFilterButton = ({ period, currentPeriod, onClick, children }) => (
     whileHover={{ scale: 1.05 }}
     whileTap={{ scale: 0.95 }}
     onClick={() => onClick(period)}
-    className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+    className={`px-4 py-2 rounded-xl font-semibold transition-all duration-300 ${
       currentPeriod === period
-        ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/25"
-        : "bg-gray-800/50 text-gray-300 hover:bg-gray-700/50 hover:text-white border border-gray-700/50"
+        ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-600/25 border border-white/20"
+        : "glass-card text-gray-300 hover:text-white hover:border-white/20 border border-white/5"
     }`}
   >
     {children}
@@ -185,11 +185,11 @@ const CustomTooltip = ({ active, payload, label }) => {
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-gray-900/95 backdrop-blur-sm border border-gray-700 p-3 rounded-lg shadow-xl"
+        className="glass-card border border-white/20 p-4 rounded-xl shadow-glow"
       >
-        <p className="text-white font-medium mb-2">{label}</p>
+        <p className="text-white font-semibold mb-2 neon-glow-blue">{label}</p>
         {payload.map((entry, index) => (
-          <p key={index} className="text-sm" style={{ color: entry.color }}>
+          <p key={index} className="text-sm font-medium" style={{ color: entry.color }}>
             {entry.name}: {entry.value}
           </p>
         ))}
@@ -282,31 +282,33 @@ export default function Dashboard() {
               {/* Revenue Trend */}
               <motion.div
                 whileHover={{ scale: 1.02 }}
-                className="bg-gray-800/30 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 hover:bg-gray-800/40 transition-all duration-300"
+                className="glass-card shadow-professional border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all duration-300"
               >
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-semibold text-white">Revenue Trend</h2>
-                  <div className="p-2 bg-indigo-500/20 rounded-lg">
-                    <TrendingUp className="w-5 h-5 text-indigo-400" />
+                  <h2 className="text-xl font-bold gradient-text-primary">Revenue Trend</h2>
+                  <div className="p-3 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 rounded-xl border border-white/10">
+                    <TrendingUp className="w-6 h-6 text-indigo-400" />
                   </div>
                 </div>
                 <ResponsiveContainer width="100%" height={300}>
                   <AreaChart data={data}>
                     <defs>
                       <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#6366F1" stopOpacity={0.3}/>
+                        <stop offset="5%" stopColor="#6366F1" stopOpacity={0.4}/>
                         <stop offset="95%" stopColor="#6366F1" stopOpacity={0}/>
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
                     <XAxis 
                       dataKey="date" 
-                      stroke="#9CA3AF"
+                      stroke="#ffffff"
                       fontSize={12}
+                      fontWeight={500}
                     />
                     <YAxis 
-                      stroke="#9CA3AF"
+                      stroke="#ffffff"
                       fontSize={12}
+                      fontWeight={500}
                       tickFormatter={(value) => `$${(value/1000).toFixed(0)}K`}
                     />
                     <Tooltip content={<CustomTooltip />} />
@@ -324,25 +326,27 @@ export default function Dashboard() {
               {/* Visitors & Conversions */}
               <motion.div
                 whileHover={{ scale: 1.02 }}
-                className="bg-gray-800/30 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 hover:bg-gray-800/40 transition-all duration-300"
+                className="glass-card shadow-professional border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all duration-300"
               >
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-semibold text-white">Visitors & Conversions</h2>
-                  <div className="p-2 bg-cyan-500/20 rounded-lg">
-                    <Users className="w-5 h-5 text-cyan-400" />
+                  <h2 className="text-xl font-bold gradient-text-secondary">Visitors & Conversions</h2>
+                  <div className="p-3 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-xl border border-white/10">
+                    <Users className="w-6 h-6 text-cyan-400" />
                   </div>
                 </div>
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart data={data}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
                     <XAxis 
                       dataKey="date" 
-                      stroke="#9CA3AF"
+                      stroke="#ffffff"
                       fontSize={12}
+                      fontWeight={500}
                     />
                     <YAxis 
-                      stroke="#9CA3AF"
+                      stroke="#ffffff"
                       fontSize={12}
+                      fontWeight={500}
                     />
                     <Tooltip content={<CustomTooltip />} />
                     <Legend />
@@ -351,14 +355,14 @@ export default function Dashboard() {
                       dataKey="visitors" 
                       stroke="#06B6D4" 
                       strokeWidth={3}
-                      dot={{ fill: '#06B6D4', strokeWidth: 2, r: 4 }}
+                      dot={{ fill: '#06B6D4', strokeWidth: 2, r: 5 }}
                     />
                     <Line 
                       type="monotone" 
                       dataKey="conversions" 
                       stroke="#F59E0B" 
                       strokeWidth={3}
-                      dot={{ fill: '#F59E0B', strokeWidth: 2, r: 4 }}
+                      dot={{ fill: '#F59E0B', strokeWidth: 2, r: 5 }}
                     />
                   </LineChart>
                 </ResponsiveContainer>
@@ -367,31 +371,33 @@ export default function Dashboard() {
               {/* Team Performance */}
               <motion.div
                 whileHover={{ scale: 1.02 }}
-                className="bg-gray-800/30 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 hover:bg-gray-800/40 transition-all duration-300"
+                className="glass-card shadow-professional border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all duration-300"
               >
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-semibold text-white">Team Performance</h2>
-                  <div className="p-2 bg-orange-500/20 rounded-lg">
-                    <Zap className="w-5 h-5 text-orange-400" />
+                  <h2 className="text-xl font-bold gradient-text-primary">Team Performance</h2>
+                  <div className="p-3 bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-xl border border-white/10">
+                    <Zap className="w-6 h-6 text-orange-400" />
                   </div>
                 </div>
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={teamData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
                     <XAxis 
                       dataKey="name" 
-                      stroke="#9CA3AF"
+                      stroke="#ffffff"
                       fontSize={12}
+                      fontWeight={500}
                     />
                     <YAxis 
-                      stroke="#9CA3AF"
+                      stroke="#ffffff"
                       fontSize={12}
+                      fontWeight={500}
                     />
                     <Tooltip content={<CustomTooltip />} />
                     <Bar 
                       dataKey="performance" 
                       fill="#F59E0B"
-                      radius={[4, 4, 0, 0]}
+                      radius={[6, 6, 0, 0]}
                     />
                   </BarChart>
                 </ResponsiveContainer>
@@ -400,12 +406,12 @@ export default function Dashboard() {
               {/* Traffic Sources */}
               <motion.div
                 whileHover={{ scale: 1.02 }}
-                className="bg-gray-800/30 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 hover:bg-gray-800/40 transition-all duration-300"
+                className="glass-card shadow-professional border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all duration-300"
               >
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-semibold text-white">Traffic Sources</h2>
-                  <div className="p-2 bg-purple-500/20 rounded-lg">
-                    <Target className="w-5 h-5 text-purple-400" />
+                  <h2 className="text-xl font-bold gradient-text-secondary">Traffic Sources</h2>
+                  <div className="p-3 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl border border-white/10">
+                    <Target className="w-6 h-6 text-purple-400" />
                   </div>
                 </div>
                 <ResponsiveContainer width="100%" height={300}>
@@ -414,7 +420,7 @@ export default function Dashboard() {
                       data={pieData}
                       cx="50%"
                       cy="50%"
-                      outerRadius={80}
+                      outerRadius={90}
                       fill="#8884d8"
                       dataKey="value"
                       label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
@@ -442,14 +448,14 @@ export default function Dashboard() {
             >
               <motion.div
                 whileHover={{ scale: 1.02 }}
-                className="bg-gray-800/30 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6"
+                className="glass-card shadow-professional border border-white/10 rounded-xl p-6 hover:border-white/20 transition-all duration-300"
               >
-                <h3 className="text-lg font-semibold text-white mb-4">Bounce Rate Trend</h3>
+                <h3 className="text-lg font-bold gradient-text-primary mb-4">Bounce Rate Trend</h3>
                 <ResponsiveContainer width="100%" height={200}>
                   <LineChart data={data}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis dataKey="date" stroke="#9CA3AF" fontSize={10} />
-                    <YAxis stroke="#9CA3AF" fontSize={10} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                    <XAxis dataKey="date" stroke="#ffffff" fontSize={10} fontWeight={500} />
+                    <YAxis stroke="#ffffff" fontSize={10} fontWeight={500} />
                     <Tooltip content={<CustomTooltip />} />
                     <Line 
                       type="monotone" 
@@ -463,19 +469,19 @@ export default function Dashboard() {
 
               <motion.div
                 whileHover={{ scale: 1.02 }}
-                className="bg-gray-800/30 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6"
+                className="glass-card shadow-professional border border-white/10 rounded-xl p-6 hover:border-white/20 transition-all duration-300"
               >
-                <h3 className="text-lg font-semibold text-white mb-4">CTR Performance</h3>
+                <h3 className="text-lg font-bold gradient-text-secondary mb-4">CTR Performance</h3>
                 <ResponsiveContainer width="100%" height={200}>
                   <BarChart data={data.slice(-7)}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis dataKey="date" stroke="#9CA3AF" fontSize={10} />
-                    <YAxis stroke="#9CA3AF" fontSize={10} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                    <XAxis dataKey="date" stroke="#ffffff" fontSize={10} fontWeight={500} />
+                    <YAxis stroke="#ffffff" fontSize={10} fontWeight={500} />
                     <Tooltip content={<CustomTooltip />} />
                     <Bar 
                       dataKey="ctr" 
                       fill="#10B981"
-                      radius={[2, 2, 0, 0]}
+                      radius={[3, 3, 0, 0]}
                     />
                   </BarChart>
                 </ResponsiveContainer>
@@ -483,25 +489,25 @@ export default function Dashboard() {
 
               <motion.div
                 whileHover={{ scale: 1.02 }}
-                className="bg-gray-800/30 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6"
+                className="glass-card shadow-professional border border-white/10 rounded-xl p-6 hover:border-white/20 transition-all duration-300"
               >
-                <h3 className="text-lg font-semibold text-white mb-4">Quick Stats</h3>
+                <h3 className="text-lg font-bold gradient-text-primary mb-4">Quick Stats</h3>
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-400">Avg. Session Duration</span>
-                    <span className="text-white font-semibold">4m 32s</span>
+                    <span className="text-gray-300">Avg. Session Duration</span>
+                    <span className="text-white font-bold">4m 32s</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-400">Pages per Session</span>
-                    <span className="text-white font-semibold">3.2</span>
+                    <span className="text-gray-300">Pages per Session</span>
+                    <span className="text-white font-bold">3.2</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-400">Conversion Rate</span>
-                    <span className="text-white font-semibold">2.8%</span>
+                    <span className="text-gray-300">Conversion Rate</span>
+                    <span className="text-white font-bold">2.8%</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-400">ROI</span>
-                    <span className="text-green-400 font-semibold">+340%</span>
+                    <span className="text-gray-300">ROI</span>
+                    <span className="text-green-400 font-bold neon-glow">+340%</span>
                   </div>
                 </div>
               </motion.div>
@@ -512,24 +518,24 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
+    <div className="min-h-screen bg-black text-white overflow-x-hidden">
       {/* Header */}
-      <div className="border-b border-gray-700/50 bg-gray-900/50 backdrop-blur-sm">
+      <div className="glass-card border-b border-white/10 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-4">
               <motion.div
-                whileHover={{ rotate: 360 }}
+                whileHover={{ rotate: 360, scale: 1.1 }}
                 transition={{ duration: 0.5 }}
-                className="p-2 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg"
+                className="p-3 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl border border-white/20"
               >
-                <Activity className="w-6 h-6 text-white" />
+                <Activity className="w-7 h-7 text-white" />
               </motion.div>
               <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                <h1 className="text-3xl font-bold gradient-text animate-neon">
                   ADmyBRAND Analytics
                 </h1>
-                <p className="text-gray-400 text-sm">Real-time insights & performance metrics</p>
+                <p className="text-gray-300 text-sm">Real-time insights & performance metrics</p>
               </div>
             </div>
             
@@ -537,7 +543,7 @@ export default function Dashboard() {
             <div className="hidden md:flex items-center space-x-4">
               <div className="flex items-center space-x-2">
                 <Calendar className="w-4 h-4 text-gray-400" />
-                <div className="flex space-x-1">
+                <div className="flex space-x-2">
                   <TimeFilterButton period="1w" currentPeriod={timePeriod} onClick={setTimePeriod}>
                     1W
                   </TimeFilterButton>
@@ -557,7 +563,7 @@ export default function Dashboard() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2 bg-gray-800/50 rounded-lg"
+              className="md:hidden p-2 glass-card rounded-xl border border-white/10"
             >
               {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -593,7 +599,7 @@ export default function Dashboard() {
       </div>
 
       {/* Section Navigation */}
-      <div className="border-b border-gray-700/30 bg-gray-900/30">
+      <div className="glass-card border-b border-white/10">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex space-x-1 overflow-x-auto">
             {sections.map((section) => (
@@ -602,13 +608,13 @@ export default function Dashboard() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setActiveSection(section.id)}
-                className={`flex items-center space-x-2 px-4 py-3 text-sm font-medium whitespace-nowrap transition-all ${
+                className={`flex items-center space-x-2 px-6 py-4 text-sm font-semibold whitespace-nowrap transition-all ${
                   activeSection === section.id
-                    ? "text-indigo-400 border-b-2 border-indigo-400"
+                    ? "text-indigo-400 border-b-2 border-indigo-400 neon-glow-blue"
                     : "text-gray-400 hover:text-gray-300"
                 }`}
               >
-                <section.icon className="w-4 h-4" />
+                <section.icon className="w-5 h-5" />
                 <span>{section.name}</span>
               </motion.button>
             ))}
